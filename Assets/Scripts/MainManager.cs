@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Video;
-using SFB;
+using TriLibCore.SFB;
 
 public class MainManager : MonoBehaviour
 {
@@ -30,11 +30,17 @@ public class MainManager : MonoBehaviour
                 new ExtensionFilter("All Files", "*" ),
             };
             var result = StandaloneFileBrowser.OpenFilePanel("Open File", "", extensions, false);
-            WriteResult(result);
-            if (result.Length > 0)
+            if (result != null)
             {
-                Debug.Log("Success");
-                SetupVideo(0, result[0]);
+                var hasFiles = result.Count > 0 && result[0].HasData;
+
+                if(hasFiles){
+                    string filePath = result[0].Name;
+
+                    WriteResult(filePath);
+                    Debug.Log("Success");
+                    SetupVideo(0, filePath);
+                }
             }
         }
 
@@ -47,12 +53,17 @@ public class MainManager : MonoBehaviour
                 new ExtensionFilter("All Files", "*" ),
             };
             var result = StandaloneFileBrowser.OpenFilePanel("Open File", "", extensions, false);
-            WriteResult(result);
-            if (result.Length > 0)
+            if (result != null)
             {
-                Debug.Log("Success");
+                var hasFiles = result.Count > 0 && result[0].HasData;
 
-                SetupVideo(1, result[0]);
+                if(hasFiles){
+                    string filePath = result[0].Name;
+
+                    WriteResult(filePath);
+                    Debug.Log("Success");
+                    SetupVideo(1, filePath);
+                }
             }
         }
 
@@ -103,6 +114,10 @@ public class MainManager : MonoBehaviour
         GUILayout.Space(20);
         GUILayout.Label(_path);
         GUILayout.EndHorizontal();
+    }
+    public void WriteResult(string path)
+    {
+        _path = path + "\n";
     }
     public void WriteResult(string[] paths)
     {
