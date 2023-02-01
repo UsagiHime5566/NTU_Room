@@ -9,13 +9,25 @@ using System.Threading.Tasks;
 
 public class MainManager : MonoBehaviour
 {
+    public static MainManager instance;
+    void Awake()
+    {
+        instance = this;
+    }
+
     public Button BTN_Wall;
+    public Button BTN_Wall1;
+    public Button BTN_Wall2;
+    public Button BTN_Wall3;
     public Button BTN_Floor;
     public Button BTN_Sound;
     public Button BTN_SyncPlay;
     public Button BTN_ClearSound;
 
     public Text TXT_Wall;
+    public Text TXT_Wall1;
+    public Text TXT_Wall2;
+    public Text TXT_Wall3;
     public Text TXT_Floor;
     public Text TXT_Sound;
     public Text TXT_Log;
@@ -23,24 +35,43 @@ public class MainManager : MonoBehaviour
     public Toggle TG_Mute;
 
     public List<VideoPlayer> videoPlayers;
+    public List<VideoPlayer> videoPlayersWalls;
     public AudioSource audioSource;
 
     [Header("Auto Work")]
     public bool imidiatePlay = false;
+    int PlayMode = 0;
     string _path;
 
-    void Start(){
-        BTN_Wall.onClick.AddListener(() => {
+    void Start()
+    {
+        BTN_Wall.onClick.AddListener(() =>
+        {
             LoadVideo(0, TXT_Wall);
         });
-        BTN_Floor.onClick.AddListener(() => {
+        BTN_Wall1.onClick.AddListener(() =>
+        {
+            LoadVideoWall(0, TXT_Wall1);
+        });
+        BTN_Wall2.onClick.AddListener(() =>
+        {
+            LoadVideoWall(1, TXT_Wall2);
+        });
+        BTN_Wall3.onClick.AddListener(() =>
+        {
+            LoadVideoWall(2, TXT_Wall3);
+        });
+        BTN_Floor.onClick.AddListener(() =>
+        {
             LoadVideo(1, TXT_Floor);
         });
-        BTN_Sound.onClick.AddListener(() => {
+        BTN_Sound.onClick.AddListener(() =>
+        {
             LoadSound(TXT_Sound);
         });
 
-        BTN_ClearSound.onClick.AddListener(() => {
+        BTN_ClearSound.onClick.AddListener(() =>
+        {
             audioSource.clip = null;
             SystemConfig.Instance.SaveData("Sound", "");
             TXT_Sound.text = "null";
@@ -48,7 +79,8 @@ public class MainManager : MonoBehaviour
 
         BTN_SyncPlay.onClick.AddListener(SyncPlay);
 
-        TG_Mute.onValueChanged.AddListener((x) => {
+        TG_Mute.onValueChanged.AddListener((x) =>
+        {
             SystemConfig.Instance.SaveData("Mute", x);
             MuteVideo(x);
         });
@@ -56,7 +88,8 @@ public class MainManager : MonoBehaviour
         LoadLastSetting();
     }
 
-    void LoadVideo(int index, Text txt){
+    void LoadVideoWall(int index, Text txt)
+    {
         var extensions = new[] {
             new ExtensionFilter("Support Video Files", "mp4"),
             new ExtensionFilter("All Files", "*" ),
@@ -66,17 +99,42 @@ public class MainManager : MonoBehaviour
         {
             var hasFiles = result.Count > 0 && result[0].HasData;
 
-            if(hasFiles){
+            if (hasFiles)
+            {
                 string filePath = result[0].Name;
 
-                if(txt) txt.text = filePath;
-                SystemConfig.Instance.SaveData("Video"+index, filePath);
+                if (txt) txt.text = filePath;
+                SystemConfig.Instance.SaveData("VideoWall" + index, filePath);
+                SetupVideoWall(index, filePath);
+                Debug.Log("Success");
+            }
+        }
+    }
+
+    void LoadVideo(int index, Text txt)
+    {
+        var extensions = new[] {
+            new ExtensionFilter("Support Video Files", "mp4"),
+            new ExtensionFilter("All Files", "*" ),
+        };
+        var result = StandaloneFileBrowser.OpenFilePanel("Open File", "", extensions, false);
+        if (result != null)
+        {
+            var hasFiles = result.Count > 0 && result[0].HasData;
+
+            if (hasFiles)
+            {
+                string filePath = result[0].Name;
+
+                if (txt) txt.text = filePath;
+                SystemConfig.Instance.SaveData("Video" + index, filePath);
                 SetupVideo(index, filePath);
                 Debug.Log("Success");
             }
         }
     }
-    void LoadSound(Text txt){
+    void LoadSound(Text txt)
+    {
         var extensions = new[] {
             new ExtensionFilter("Support Sound Files", "mp3"),
             new ExtensionFilter("All Files", "*" ),
@@ -86,10 +144,11 @@ public class MainManager : MonoBehaviour
         {
             var hasFiles = result.Count > 0 && result[0].HasData;
 
-            if(hasFiles){
+            if (hasFiles)
+            {
                 string filePath = result[0].Name;
 
-                if(txt) txt.text = filePath;
+                if (txt) txt.text = filePath;
                 SystemConfig.Instance.SaveData("Sound", filePath);
                 StartCoroutine(GetAudioClip(filePath));
                 Debug.Log("Success");
@@ -97,35 +156,59 @@ public class MainManager : MonoBehaviour
         }
     }
 
-    void LoadLastSetting(){
+    void LoadLastSetting()
+    {
         string pathWall = SystemConfig.Instance.GetData<string>("Video0", "");
-        if(!string.IsNullOrEmpty(pathWall)){
-            if(TXT_Wall) TXT_Wall.text = pathWall;
+        if (!string.IsNullOrEmpty(pathWall))
+        {
+            if (TXT_Wall) TXT_Wall.text = pathWall;
             SetupVideo(0, pathWall);
         }
 
         string pathFloor = SystemConfig.Instance.GetData<string>("Video1", "");
-        if(!string.IsNullOrEmpty(pathFloor)){
-            if(TXT_Floor) TXT_Floor.text = pathFloor;
+        if (!string.IsNullOrEmpty(pathFloor))
+        {
+            if (TXT_Floor) TXT_Floor.text = pathFloor;
             SetupVideo(1, pathFloor);
         }
 
+        pathWall = SystemConfig.Instance.GetData<string>("VideoWall0", "");
+        if (!string.IsNullOrEmpty(pathWall))
+        {
+            if (TXT_Wall1) TXT_Wall1.text = pathWall;
+            SetupVideoWall(0, pathWall);
+        }
+        pathWall = SystemConfig.Instance.GetData<string>("VideoWall1", "");
+        if (!string.IsNullOrEmpty(pathWall))
+        {
+            if (TXT_Wall2) TXT_Wall2.text = pathWall;
+            SetupVideoWall(1, pathWall);
+        }
+        pathWall = SystemConfig.Instance.GetData<string>("VideoWall2", "");
+        if (!string.IsNullOrEmpty(pathWall))
+        {
+            if (TXT_Wall3) TXT_Wall3.text = pathWall;
+            SetupVideoWall(2, pathWall);
+        }
+
         string pathSound = SystemConfig.Instance.GetData<string>("Sound", "");
-        if(!string.IsNullOrEmpty(pathSound)){
-            if(TXT_Sound) TXT_Sound.text = pathSound;
+        if (!string.IsNullOrEmpty(pathSound))
+        {
+            if (TXT_Sound) TXT_Sound.text = pathSound;
             StartCoroutine(GetAudioClip(pathSound));
         }
 
         TG_Mute.isOn = SystemConfig.Instance.GetData<bool>("Mute", false);
     }
 
-    void MuteVideo(bool val){
+    void MuteVideo(bool val)
+    {
         foreach (var vp in videoPlayers)
         {
             vp.SetDirectAudioMute(0, val);
         }
     }
- 
+
     // private IEnumerator ConvertFilesToAudioClip(string songName)
     // {
     //     string url = string.Format("file://{0}", songName);
@@ -151,10 +234,10 @@ public class MainManager : MonoBehaviour
     {
         string url = string.Format("file://{0}", filePath);
         UnityWebRequest webRequest = UnityWebRequestMultimedia.GetAudioClip(url, AudioType.MPEG);
-         
+
         yield return webRequest.SendWebRequest();
- 
-        if(webRequest.result != UnityWebRequest.Result.Success)
+
+        if (webRequest.result != UnityWebRequest.Result.Success)
         {
             Debug.Log(webRequest.error);
         }
@@ -287,6 +370,26 @@ public class MainManager : MonoBehaviour
     //     }
     // }
 
+    void SetupVideoWall(int index, string filePath)
+    {
+        videoPlayersWalls[index].url = filePath;
+        videoPlayersWalls[index].Prepare();
+        videoPlayersWalls[index].loopPointReached += delegate
+        {
+
+        };
+        videoPlayersWalls[index].prepareCompleted += delegate
+        {
+            Debug.Log($"Get video size: {videoPlayersWalls[index].texture.width}x{videoPlayersWalls[index].texture.height}");
+
+        };
+
+        if (!imidiatePlay)
+            return;
+
+        videoPlayersWalls[index].Play();
+    }
+
     void SetupVideo(int index, string filePath)
     {
         videoPlayers[index].url = filePath;
@@ -307,30 +410,73 @@ public class MainManager : MonoBehaviour
         videoPlayers[index].Play();
     }
 
+    public void SetPlayMode(int val)
+    {
+        PlayMode = val;
+        Walls.instance.SetPlayMode(val);
+    }
+
     async void SyncPlay()
     {
-        if (videoPlayers[0].isPrepared && videoPlayers[1].isPrepared)
+        if (PlayMode == 0)
         {
-            videoPlayers[0].Stop();
-            videoPlayers[1].Stop();
-            audioSource.Stop();
+            if (videoPlayers[0].isPrepared && videoPlayers[1].isPrepared)
+            {
+                videoPlayers[0].Stop();
+                videoPlayers[1].Stop();
+                videoPlayersWalls[0].Stop();
+                videoPlayersWalls[1].Stop();
+                videoPlayersWalls[2].Stop();
+                audioSource.Stop();
 
-            await Task.Delay(500);
-            if(this == null) return;
+                await Task.Delay(500);
+                if (this == null) return;
 
-            videoPlayers[0].Play();
-            videoPlayers[1].Play();
+                videoPlayers[0].Play();
+                videoPlayers[1].Play();
 
-            if(audioSource.clip != null)
-                audioSource.Play();
+                if (audioSource.clip != null)
+                    audioSource.Play();
 
-            if(TXT_Log) TXT_Log.text = "Success";
+                if (TXT_Log) TXT_Log.text = "Success";
+            }
+            else
+            {
+                string log = "not all video prepared!";
+                Debug.Log(log);
+                if (TXT_Log) TXT_Log.text = log;
+            }
         }
         else
         {
-            string log = "not all video prepared!";
-            Debug.Log(log);
-            if(TXT_Log) TXT_Log.text = log;
+            if (videoPlayers[1].isPrepared && videoPlayersWalls[0].isPrepared && videoPlayersWalls[1].isPrepared && videoPlayersWalls[2].isPrepared)
+            {
+                videoPlayers[0].Stop();
+                videoPlayers[1].Stop();
+                videoPlayersWalls[0].Stop();
+                videoPlayersWalls[1].Stop();
+                videoPlayersWalls[2].Stop();
+                audioSource.Stop();
+
+                await Task.Delay(500);
+                if (this == null) return;
+
+                videoPlayers[1].Play();
+                videoPlayersWalls[0].Play();
+                videoPlayersWalls[1].Play();
+                videoPlayersWalls[2].Play();
+
+                if (audioSource.clip != null)
+                    audioSource.Play();
+
+                if (TXT_Log) TXT_Log.text = "Success";
+            }
+            else
+            {
+                string log = "not all video prepared!";
+                Debug.Log(log);
+                if (TXT_Log) TXT_Log.text = log;
+            }
         }
     }
 }
