@@ -4,6 +4,8 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Video;
 using TriLibCore.SFB;
+using UnityEngine.Networking;
+using System.Threading.Tasks;
 
 public class MainManager : MonoBehaviour
 {
@@ -11,6 +13,7 @@ public class MainManager : MonoBehaviour
     public Button BTN_Floor;
     public Button BTN_Sound;
     public Button BTN_SyncPlay;
+    public Button BTN_ClearSound;
 
     public Text TXT_Wall;
     public Text TXT_Floor;
@@ -20,6 +23,7 @@ public class MainManager : MonoBehaviour
     public Toggle TG_Mute;
 
     public List<VideoPlayer> videoPlayers;
+    public AudioSource audioSource;
 
     [Header("Auto Work")]
     public bool imidiatePlay = false;
@@ -34,6 +38,12 @@ public class MainManager : MonoBehaviour
         });
         BTN_Sound.onClick.AddListener(() => {
             LoadSound(TXT_Sound);
+        });
+
+        BTN_ClearSound.onClick.AddListener(() => {
+            audioSource.clip = null;
+            SystemConfig.Instance.SaveData("Sound", "");
+            TXT_Sound.text = "null";
         });
 
         BTN_SyncPlay.onClick.AddListener(SyncPlay);
@@ -81,7 +91,7 @@ public class MainManager : MonoBehaviour
 
                 if(txt) txt.text = filePath;
                 SystemConfig.Instance.SaveData("Sound", filePath);
-
+                StartCoroutine(GetAudioClip(filePath));
                 Debug.Log("Success");
             }
         }
@@ -103,7 +113,7 @@ public class MainManager : MonoBehaviour
         string pathSound = SystemConfig.Instance.GetData<string>("Sound", "");
         if(!string.IsNullOrEmpty(pathSound)){
             if(TXT_Sound) TXT_Sound.text = pathSound;
-            
+            StartCoroutine(GetAudioClip(pathSound));
         }
 
         TG_Mute.isOn = SystemConfig.Instance.GetData<bool>("Mute", false);
@@ -113,6 +123,47 @@ public class MainManager : MonoBehaviour
         foreach (var vp in videoPlayers)
         {
             vp.SetDirectAudioMute(0, val);
+        }
+    }
+ 
+    // private IEnumerator ConvertFilesToAudioClip(string songName)
+    // {
+    //     string url = string.Format("file://{0}", songName);
+    //     // WWW www = new WWW(url);
+    //     // yield return www;
+    //     // songs.Add(www.GetAudioClip(false,false));
+
+    //     using (UnityWebRequest web = UnityWebRequestMultimedia.GetAudioClip(url))
+    //     {
+    //         yield return web.SendWebRequest();
+    //         if(!web.isNetworkError && !web.isHttpError)
+    //         {
+    //             var clip = DownloadHandlerAudioClip.GetContent(web);
+    //             if(clip != null)
+    //             {
+    //                 songs.Add(clip);
+    //             }
+    //         }
+    //     }
+    // }
+
+    IEnumerator GetAudioClip(string filePath)
+    {
+        string url = string.Format("file://{0}", filePath);
+        UnityWebRequest webRequest = UnityWebRequestMultimedia.GetAudioClip(url, AudioType.MPEG);
+         
+        yield return webRequest.SendWebRequest();
+ 
+        if(webRequest.result != UnityWebRequest.Result.Success)
+        {
+            Debug.Log(webRequest.error);
+        }
+        else
+        {
+            AudioClip clip = DownloadHandlerAudioClip.GetContent(webRequest);
+            clip.name = "tempAudio";
+            //audioClips.Add(clip);
+            audioSource.clip = clip;
         }
     }
 
@@ -256,12 +307,22 @@ public class MainManager : MonoBehaviour
         videoPlayers[index].Play();
     }
 
-    void SyncPlay()
+    async void SyncPlay()
     {
         if (videoPlayers[0].isPrepared && videoPlayers[1].isPrepared)
         {
+            videoPlayers[0].Stop();
+            videoPlayers[1].Stop();
+            audioSource.Stop();
+
+            await Task.Delay(500);
+            if(this == null) return;
+
             videoPlayers[0].Play();
             videoPlayers[1].Play();
+
+            if(audioSource.clip != null)
+                audioSource.Play();
 
             if(TXT_Log) TXT_Log.text = "Success";
         }
