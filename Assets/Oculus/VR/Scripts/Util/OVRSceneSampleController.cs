@@ -112,8 +112,8 @@ public class OVRSceneSampleController : MonoBehaviour
         // Make sure to hide cursor
         if (Application.isEditor == false)
         {
-			Cursor.visible = false;
-			Cursor.lockState = CursorLockMode.Locked;
+			//Cursor.visible = false;
+			//Cursor.lockState = CursorLockMode.Locked;
         }
 
         // CameraController updates

@@ -48,6 +48,7 @@ public class MainManager : MonoBehaviour
         BTN_Wall.onClick.AddListener(() =>
         {
             LoadVideo(0, TXT_Wall);
+            //Debug.Log("click event");
         });
         BTN_Wall1.onClick.AddListener(() =>
         {
@@ -112,7 +113,7 @@ public class MainManager : MonoBehaviour
     }
 
     void LoadVideo(int index, Text txt)
-    {
+    {   
         var extensions = new[] {
             new ExtensionFilter("Support Video Files", "mp4"),
             new ExtensionFilter("All Files", "*" ),
