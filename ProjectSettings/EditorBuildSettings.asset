@@ -6,6 +6,9 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
+    path: Assets/Scenes/NTNU_VRMove.unity
+    guid: 1179b3d4b1823624eafb4d494a951274
+  - enabled: 1
     path: Assets/Scenes/NTU_VRMove.unity
     guid: e49de19bef7c6254ca27bb20ff148311
   m_configObjects:
