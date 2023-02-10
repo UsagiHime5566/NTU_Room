@@ -113,7 +113,7 @@ public class MainManager : MonoBehaviour
     }
 
     void LoadVideo(int index, Text txt)
-    {   
+    {
         var extensions = new[] {
             new ExtensionFilter("Support Video Files", "mp4"),
             new ExtensionFilter("All Files", "*" ),
@@ -435,6 +435,9 @@ public class MainManager : MonoBehaviour
 
                 videoPlayers[0].Play();
                 videoPlayers[1].Play();
+
+                videoPlayers[0].time = 0;
+                videoPlayers[1].time = 0;
 
                 if (audioSource.clip != null)
                     audioSource.Play();
