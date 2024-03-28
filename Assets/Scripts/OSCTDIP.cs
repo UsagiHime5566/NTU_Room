@@ -8,7 +8,7 @@ public class OSCTDIP : MonoBehaviour
 {
     public InputField INP_IP;
     public OscConnection connect;
-    void Start()
+    void Awake()
     {
         INP_IP.onValueChanged.AddListener(x =>
         {

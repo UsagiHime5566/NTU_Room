@@ -11,9 +11,15 @@ EditorBuildSettings:
   - enabled: 0
     path: Assets/Scenes/NTU_VRMove.unity
     guid: e49de19bef7c6254ca27bb20ff148311
-  - enabled: 1
-    path: Assets/Scenes/NTNU_VRMoveTD.unity
+  - enabled: 0
+    path: Assets/Scenes/NTU_VRMoveTD.unity
     guid: 7dab012cb205c7346b429d158b6eebb8
+  - enabled: 1
+    path: Assets/Scenes/NTNU_VRMoveArtworksOnly.unity
+    guid: e6728004256cc6c47b7bd52969cc5bf1
+  - enabled: 1
+    path: Assets/Scenes/NTNU_VRMoveArtworksOnly2.unity
+    guid: aee5124ad15ba2040ba83d44d3ddf814
   m_configObjects:
     Unity.XR.Oculus.Settings: {fileID: 11400000, guid: 37c536b037b538b43a07411c21540739, type: 2}
     com.unity.xr.management.loader_settings: {fileID: 11400000, guid: 8bd1d47c362e35d438738640ed47637e, type: 2}
