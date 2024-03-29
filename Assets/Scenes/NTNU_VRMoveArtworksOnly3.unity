@@ -8771,12 +8771,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ColapseWalls:
   - {fileID: 1623296917}
-  - {fileID: 0}
-  - {fileID: 0}
   SeperateWalls:
   - {fileID: 2083387818}
-  - {fileID: 0}
-  - {fileID: 0}
 --- !u!1 &1670713752
 GameObject:
   m_ObjectHideFlags: 0
