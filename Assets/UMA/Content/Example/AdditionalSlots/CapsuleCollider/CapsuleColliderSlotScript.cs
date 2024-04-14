@@ -15,7 +15,7 @@ namespace UMA
 			{
 				rigid = umaData.gameObject.AddComponent<Rigidbody>();
 			}
-			rigid.constraints = RigidbodyConstraints.FreezeRotation;
+			rigid.constraints = RigidbodyConstraints.FreezeAll;
 			rigid.mass = umaData.characterMass;
 
 			CapsuleCollider capsule = umaData.gameObject.GetComponent<CapsuleCollider>();

@@ -6,6 +6,7 @@ TagManager:
   tags:
   - Character 1
   - Character 2
+  - UMAIgnore
   layers:
   - Default
   - TransparentFX
@@ -27,7 +28,7 @@ TagManager:
   - 
   - 
   - 
-  - 
+  - Video
   - 
   - 
   - 
