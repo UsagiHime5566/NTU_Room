@@ -11,7 +11,7 @@ EditorBuildSettings:
   - enabled: 0
     path: Assets/Scenes/NTU_VRMove.unity
     guid: e49de19bef7c6254ca27bb20ff148311
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/NTU_VRMoveTD.unity
     guid: 7dab012cb205c7346b429d158b6eebb8
   - enabled: 0
@@ -20,7 +20,7 @@ EditorBuildSettings:
   - enabled: 0
     path: Assets/Scenes/NTNU_VRMoveArtworksOnly2.unity
     guid: aee5124ad15ba2040ba83d44d3ddf814
-  - enabled: 0
+  - enabled: 1
     path: Assets/Scenes/NTNU_VRMoveArtworksOnly_Select.unity
     guid: 883eaed7e8e51ba429fd45631193decf
   m_configObjects:
